@@ -15,3 +15,16 @@ export async function saveMusic(name: string, youtubeLink: string) {
   );
   return;
 }
+
+export async function updateMusicScore(id: number, newScore: number) {
+  await connection.query(`UPDATE "music_list" SET score = $1 WHERE id = $2`, [
+    newScore,
+    id,
+  ]);
+  return;
+}
+
+export async function deleteMusicById(id: number) {
+  await connection.query(`DELETE * FROM "music_list" WHERE id = $1`, [id]);
+  return;
+}

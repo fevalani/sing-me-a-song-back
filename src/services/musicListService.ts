@@ -1,3 +1,8 @@
+import {
+  deleteMusicById,
+  updateMusicScore,
+} from "../repositories/musicRepository";
+
 export function validateYouTubeUrl(youtubeLink: string) {
   if (youtubeLink) {
     const regExp =
@@ -7,4 +12,20 @@ export function validateYouTubeUrl(youtubeLink: string) {
     }
   }
   return false;
+}
+
+export async function downVoteLogic(id: number, score: number) {
+  const newScore = score - 1;
+  if (newScore === -5) {
+    await deleteMusicById(id);
+  } else {
+    await updateMusicScore(id, newScore);
+  }
+  return;
+}
+
+export async function upVoteLogic(id: number, score: number) {
+  const newScore = score + 1;
+  await updateMusicScore(id, newScore);
+  return;
 }
