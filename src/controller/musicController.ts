@@ -1,21 +1,24 @@
 import { Request, Response } from "express";
+import { saveMusic } from "../repositories/musicRepository";
 import { bodySchema } from "../schemas/bodySchema";
-import { existsSong, validateYouTubeUrl } from "../services/musicListService";
+import { validateYouTubeUrl } from "../services/musicListService";
 
-export function musicCreate(req: Request, res: Response) {
+export async function musicCreate(req: Request, res: Response) {
   const { name, youtubeLink } = req.body;
 
   if (!!bodySchema.validate({ name, youtubeLink }).error) {
-    res.sendStatus(400);
+    return res.sendStatus(400);
   }
 
   if (!validateYouTubeUrl(youtubeLink)) {
-    res.sendStatus(401);
+    return res.sendStatus(401);
   }
 
-  if (existsSong(youtubeLink)) {
-    res.sendStatus(409);
-  }
-
+  await saveMusic(name, youtubeLink);
   res.sendStatus(201);
+}
+
+export async function changeMusicScore(req: Request, res: Response) {
+  console.log(req.params);
+  res.sendStatus(200);
 }

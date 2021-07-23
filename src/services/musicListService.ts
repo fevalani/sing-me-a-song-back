@@ -1,18 +1,3 @@
-import connection from "../database";
-
-export async function existsSong(youtubeLink: string) {
-  const songs = await connection.query(
-    `SELECT * FROM "music_list" WHERE "youtubeLink" = $1`,
-    [youtubeLink]
-  );
-  console.log(songs);
-
-  if (songs.rowCount !== 0) {
-    return true;
-  }
-  return false;
-}
-
 export function validateYouTubeUrl(youtubeLink: string) {
   if (youtubeLink) {
     const regExp =
