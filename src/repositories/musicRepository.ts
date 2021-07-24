@@ -1,4 +1,5 @@
 import connection from "../database";
+import { getRecommendation } from "../services/musicListService";
 
 export async function getSongById(id: number) {
   const song = await connection.query(
@@ -27,4 +28,25 @@ export async function updateMusicScore(id: number, newScore: number) {
 export async function deleteMusicById(id: number) {
   await connection.query(`DELETE * FROM "music_list" WHERE id = $1`, [id]);
   return;
+}
+
+export async function getAnyMusic() {
+  let recommendation = await connection.query(
+    `SELECT * FROM "music_list" ORDER BY random() LIMIT 1`
+  );
+  return recommendation.rows[0];
+}
+
+export async function getRecommendationByScore(biggerThan10: boolean) {
+  let recommendation;
+  if (biggerThan10) {
+    recommendation = await connection.query(
+      `SELECT * FROM "music_list" WHERE score > 10 ORDER BY random() LIMIT 1`
+    );
+  } else {
+    recommendation = await connection.query(
+      `SELECT * FROM "music_list" WHERE score < 11 ORDER BY random() LIMIT 1`
+    );
+  }
+  return recommendation.rows[0];
 }

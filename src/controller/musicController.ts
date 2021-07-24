@@ -3,6 +3,7 @@ import { getSongById, saveMusic } from "../repositories/musicRepository";
 import { bodySchema } from "../schemas/bodySchema";
 import {
   downVoteLogic,
+  getRecommendation,
   upVoteLogic,
   validateYouTubeUrl,
 } from "../services/musicListService";
@@ -27,19 +28,35 @@ export async function musicCreate(req: Request, res: Response) {
 }
 
 export async function changeMusicScore(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  const song = await getSongById(id);
+  try {
+    const id = Number(req.params.id);
+    const song = await getSongById(id);
 
-  if (!song) {
-    return res.sendStatus(406);
+    if (!song) {
+      return res.sendStatus(406);
+    }
+    const { score } = song;
+
+    if (req.path.includes("downvote")) {
+      await downVoteLogic(id, score);
+    } else {
+      await upVoteLogic(id, score);
+    }
+    return res.sendStatus(200);
+  } catch {
+    res.sendStatus(500);
   }
-  const { score } = song;
+}
 
-  if (req.path.includes("downvote")) {
-    await downVoteLogic(id, score);
-    return res.sendStatus(200);
-  } else {
-    await upVoteLogic(id, score);
-    return res.sendStatus(200);
+export async function getRandomMusic(req: Request, res: Response) {
+  try {
+    const recommendation = await getRecommendation();
+
+    if (recommendation) {
+      return res.send(recommendation);
+    }
+    res.sendStatus(404);
+  } catch {
+    res.sendStatus(500);
   }
 }

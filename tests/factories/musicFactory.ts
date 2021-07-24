@@ -11,6 +11,18 @@ export function bodyMusicCreate() {
   return body;
 }
 
+export async function bodyMusicInsert(num: number) {
+  for (let i = 0; i < num; i++) {
+    const { name, youtubeLink } = bodyMusicCreate();
+    await connection.query(
+      `INSERT INTO "music_list" (name, "youtubeLink") VALUES ($1, $2);`,
+      [name, youtubeLink]
+    );
+    console.log(name, youtubeLink);
+    console.log(await connection.query('SELECT * FROM "music_list"'));
+  }
+}
+
 export async function getMusicId() {
   const song = await connection.query(`SELECT * FROM "music_list"`);
   return song.rows[0].id;

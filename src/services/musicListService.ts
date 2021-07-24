@@ -1,5 +1,7 @@
 import {
   deleteMusicById,
+  getAnyMusic,
+  getRecommendationByScore,
   updateMusicScore,
 } from "../repositories/musicRepository";
 
@@ -16,7 +18,7 @@ export function validateYouTubeUrl(youtubeLink: string) {
 
 export async function downVoteLogic(id: number, score: number) {
   const newScore = score - 1;
-  if (newScore === -5) {
+  if (newScore === -6) {
     await deleteMusicById(id);
   } else {
     await updateMusicScore(id, newScore);
@@ -28,4 +30,24 @@ export async function upVoteLogic(id: number, score: number) {
   const newScore = score + 1;
   await updateMusicScore(id, newScore);
   return;
+}
+
+export async function getRecommendation() {
+  let recommendation;
+  if (Math.random() < 0.3) {
+    recommendation = await getRecommendationByScore(false);
+    if (recommendation) {
+      return recommendation;
+    } else {
+      recommendation = await getAnyMusic();
+    }
+  } else {
+    recommendation = await getRecommendationByScore(true);
+    if (recommendation) {
+      return recommendation;
+    } else {
+      recommendation = await getAnyMusic();
+    }
+  }
+  return recommendation;
 }

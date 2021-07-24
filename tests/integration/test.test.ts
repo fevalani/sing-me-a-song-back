@@ -1,12 +1,20 @@
 import supertest from "supertest";
 import app from "../../src/app";
 import connection from "../../src/database";
-import { bodyMusicCreate, getMusicId } from "../factories/musicFactory";
+import {
+  bodyMusicCreate,
+  bodyMusicInsert,
+  getMusicId,
+} from "../factories/musicFactory";
 import { clearDatabase, endConnection } from "../utils/database";
 
 afterAll(async () => {
   await clearDatabase();
   await endConnection();
+});
+
+beforeEach(async () => {
+  await clearDatabase();
 });
 
 beforeAll(async () => {
@@ -82,4 +90,35 @@ describe("POST /recommendations/:id/downvote", () => {
 
     expect(response.status).toBe(406);
   });
+});
+
+describe("GET recommendations/random", () => {
+  it("should answer status 200 if get some music", async () => {
+    await bodyMusicInsert(3);
+    const response = await supertest(app).get("/recommendations/random");
+    expect(response.status).toBe(200);
+  });
+
+  it("should answer status 404 if not find music", async () => {
+    const response = await supertest(app).get("/recommendations/random");
+    expect(response.status).toBe(404);
+  });
+});
+
+describe("GET recommendations/top/:amount", () => {
+  /*it("should answer status 200 if get list of amount musics", async () => {
+  
+    create amount
+    for() para inserir amount + 1 no banco aleatoriamente
+    fazer supertest
+    expect 200
+    
+  });
+
+  it("should answer status 404 if not find music", async () => {
+    //create amount
+    const amount = 0;
+    const response = await supertest(app).get(`/recommendations/top/${amount}`);
+    expect(response.status).toBe(404);
+  });*/
 });
